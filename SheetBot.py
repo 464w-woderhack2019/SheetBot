@@ -225,12 +225,24 @@ async def open_char(char_name):
 
 @client.command()
 async def set_stat(file_name, a_score, val, name="setstat"):
-    a_index = stat_dict.get("a_score", -1)
+    sh = None
+    found = False
+
+    for s in sheets:
+        if s.char_name == file_name:
+            found = True
+            sh = Sheet(file_name)
+        else:
+            found = False
+            print("Sheet not found. Open a sheet with the char name.")
+            return
+
+    a_index = sh.stat_dict.get(a_score, -1)
     if a_index < 0 or a_index > 5:
         print("Input invalid")
     else:
         try:
-            stats[a_index] = int(a_score)
+            sh.stats[a_index] = int(val)
         except:
             print("Invalid score inputted")
 
