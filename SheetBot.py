@@ -70,7 +70,7 @@ GEAR
 '''
 
 TOKEN = "NTQ4NzA2MTEyNzM2NzIyOTQ0.D1JQvA.Y_7u1wv6Wt-iSA9J7G17WvS1JSU"  # Stores bot token. KEEP THIS PRIVATE
-client = commands.Bot(command_prefix=",")   # Create new client object
+client = commands.Bot(command_prefix=".")   # Create new client object
 
 presence = "God"    # Rich presence phrase. 'Playing' will be put before this automatically.
 
