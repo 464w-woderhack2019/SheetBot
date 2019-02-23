@@ -95,11 +95,17 @@ class Sheet:
     }
 
     basics = []
-    stats = []
     info = []
+    stats = []
+    saves = []
+    nums = []
+    langs = []  #Array of strings (languages)
+    weaps = []  #Array of arrays. Inner array has: [Wep name, damage, special effects]
+    spells = [] #Array of arrays. Inner array: [Spell name, spell level, range, VSM, effect]
+    gear = []   #Array of arrays. Inner array: [Gear name, effects]
 
     def __init__(self, name):
-        stats = [
+        self.stats = [
             0,  #STR
             0,  #DEX
             0,  #CON
@@ -108,6 +114,43 @@ class Sheet:
             0   #CHA
         ]
         self.char_name = name
+        self.saves = [
+            0,  #STR
+            0,  #DEX
+            0,  #CON
+            0,  #INT
+            0,  #WIS
+            0   #CHA
+        ]
+        self.nums = [
+            0,  #AC
+            0,  #TotHP
+            0,  #CurrHP
+            0,  #SPEED
+            0,  #INIT
+            0,  #PASSPERCEP
+            0   #PROFBONUS
+        ]
+        self.skills = [
+            0,  #ACRO
+            0,  #ANMHAND
+            0,  #ARCANA
+            0,  #ATH
+            0,  #DECEPT
+            0,  #HIST
+            0,  #INS
+            0,  #INTIMI
+            0,  #INVEST
+            0,  #MED
+            0,  #NAT
+            0,  #PERCEP
+            0,  #PERFORM
+            0,  #PERSUA
+            0,  #REL
+            0,  #SLEIGHT
+            0,  #STEALTH
+            0   #SURV
+        ]
 
     def set_name(self, name):
         self.char_name = name
@@ -116,7 +159,7 @@ class Sheet:
 @client.event
 async def on_ready():
     await client.change_presence(game=discord.Game(name=presence))
-    print("SheetBot: Ready to roll")
+    print("SheetBot: Ready to role(play)")
 
 
 @client.command()
