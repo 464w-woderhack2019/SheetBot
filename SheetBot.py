@@ -4,9 +4,10 @@ import random
 
 '''
 Template for txt files:
+--  basics
 PLAYER
 NAME
---
+--  info
 LVL
 CLASS
 RACE
@@ -15,21 +16,21 @@ BG
 ALIGN
 SEX
 XP
---
+--  stats
 STR
 DEX
 CON
 INT
 WIS
 CHA
---
+--  saves
 SSTR
 SDEX
 SCON
 SINT
 SWIS
 SCHA
---
+--  nums
 AC
 TotHP
 CurrHP
@@ -37,7 +38,7 @@ SPEED
 INIT
 PASSPERCEP
 PROFBONUS
---
+--  skills
 ACR
 ANMHAND
 ARCANA
@@ -56,13 +57,13 @@ REL
 SLEIGHT
 STEALTH
 SURV
---
+--  langs
 LANG
---
+--  weaps
 WEAPS
---
+--  spells
 SPELLS
---
+--  gear
 GEAR
 --
 '''
@@ -72,35 +73,65 @@ client = commands.Bot(command_prefix=",")   # Create new client object
 
 presence = "God"    # Rich presence phrase. 'Playing' will be put before this automatically.
 
+sheets = []
 
-stat_dict = {
-    "str": 0,
-    "dex": 1,
-    "con": 2,
-    "int": 3,
-    "wis": 4,
-    "cha": 5,
-    "strength": 0,
-    "dexterity": 1,
-    "constitution": 2,
-    "intelligence": 3,
-    "wisdom": 4,
-    "charisma": 5
-}
 
-stats = [
-    0, #STR     0
-    0, #DEX     1
-    0, #CON     2
-    0, #INT     3
-    0, #WIS     4
-    0  #CHA     5
-]
+class Sheet:
+
+    char_name = ""
+    stat_dict = {
+        "str": 0,
+        "dex": 1,
+        "con": 2,
+        "int": 3,
+        "wis": 4,
+        "cha": 5,
+        "strength": 0,
+        "dexterity": 1,
+        "constitution": 2,
+        "intelligence": 3,
+        "wisdom": 4,
+        "charisma": 5
+    }
+
+    basics = []
+    stats = []
+    info = []
+
+    def __init__(self, name):
+        stats = [
+            0,  #STR
+            0,  #DEX
+            0,  #CON
+            0,  #INT
+            0,  #WIS
+            0   #CHA
+        ]
+        self.char_name = name
+
+    def set_name(self, name):
+        self.char_name = name
+
 
 @client.event
 async def on_ready():
     await client.change_presence(game=discord.Game(name=presence))
     print("SheetBot: Ready to roll")
+
+
+@client.command()
+async def get_open(name="getopen"):
+    if len(sheets) > 0:
+        for sh in sheets:
+            print(sh.char_name)
+
+
+@client.command()
+async def open_char(char_name, name="openchar"):
+    new_sheet = Sheet(char_name)
+    sheets.append(Sheet)
+    temp = open(char_name + ".txt", "r")
+    temp.close()
 
 
 @client.command()
