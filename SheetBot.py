@@ -4,6 +4,7 @@ import random
 
 '''
 Template for txt files:
+1       Means file has been modified previously
 --  basics
 PLAYER
 NAME
@@ -135,7 +136,14 @@ class Sheet:
     }
     basics = []
     info = []
-    stats = []
+    stats = [
+        None,
+        None,
+        None,
+        None,
+        None,
+        None
+    ]
     saves = []
     nums = []
     langs = []  #Array of strings (languages)
@@ -145,12 +153,12 @@ class Sheet:
 
     def __init__(self, name):
         self.stats = [
-            0,  #STR
-            0,  #DEX
-            0,  #CON
-            0,  #INT
-            0,  #WIS
-            0   #CHA
+            self.stats[0],  #STR
+            self.stats[1],  #DEX
+            self.stats[2],  #CON
+            self.stats[3],  #INT
+            self.stats[4],  #WIS
+            self.stats[5]   #CHA
         ]
         self.char_name = name
         self.saves = [
@@ -230,27 +238,59 @@ async def set_stat(file_name, a_score, val, name="setstat"):
 
     for s in sheets:
         if s.char_name == file_name:
+            print(s.char_name)
             found = True
-            sh = Sheet(file_name)
-        else:
-            found = False
-            print("Sheet not found. Open a sheet with the char name.")
-            return
-
+            sh = s
+    if not found:
+        found = False
+        print("Sheet not found. Open a sheet with the char name.")
+        return
+    print("AAAHHHH")
     a_index = sh.stat_dict.get(a_score, -1)
+    print("Index: " + str(a_index))
+
     if a_index < 0 or a_index > 5:
         print("Input invalid")
     else:
         try:
+            print(sh.char_name)
             sh.stats[a_index] = int(val)
+            print(sh.stats[a_index])
         except:
             print("Invalid score inputted")
 
+
+@client.command()
+async def get_stat(file_name, a_score):
+    sh = None
+    found = False
+    for s in sheets:
+        if s.char_name == file_name:
+            found = True
+            sh = s
+            print("Name: " + sh.char_name)
+            print("Index: " + str(sh.stat_dict.get(a_score)))
+            print("Val: " + str(sh.stats[sh.stat_dict.get(a_score)]))
+            print("Forced val: " + str(sh.stats))
+    if not found:
+        print("Sheet not found. Open a sheet with the char name.")
+        return
+
+    a_index = sh.stat_dict.get(a_score, -1)
+
+    if a_index < 0 or a_index > 5:
+        print("Input invalid")
+    else:
+        try:
+            await client.say(str(sh.stats[a_index]))
+        except:
+            print("Print failed")
 
 
 @client.command()
 async def print_sheet(file_name, name="printsheet"):
     sheet = open(file_name, "r")
+    sheet.close()
 
 @client.command()
 async def roll(str):
