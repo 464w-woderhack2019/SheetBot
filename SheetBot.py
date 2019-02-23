@@ -79,6 +79,20 @@ presence = "God"    # Rich presence phrase. 'Playing' will be put before this au
 # List to store currently opened sheets
 sheets = []
 
+class Author:
+    def auth(file_name):
+        sh = None
+        found = False
+        for s in sheets:
+            if s.char_name == file_name:
+                found = True
+                sh = s
+                print( "Name: " + sh.char_name )
+                print( "Forced val: " + str( sh.stats ) )
+        if not found:
+            print( "Sheet not found. Open a sheet with the char name." )
+            return -1
+        return sh
 
 #   Stores all information for a 5e character sheet
 class Sheet:
@@ -166,41 +180,41 @@ class Sheet:
         ]
         self.char_name = name
         self.saves = [
-            0,  #STR
-            0,  #DEX
-            0,  #CON
-            0,  #INT
-            0,  #WIS
-            0   #CHA
+            None,  #STR
+            None,  #DEX
+            None,  #CON
+            None,  #INT
+            None,  #WIS
+            None   #CHA
         ]
         self.nums = [
-            0,  #AC
-            0,  #TotHP
-            0,  #CurrHP
-            0,  #SPEED
-            0,  #INIT
-            0,  #PASSPERCEP
-            0   #PROFBONUS
+            None,  #AC
+            None,  #TotHP
+            None,  #CurrHP
+            None,  #SPEED
+            None,  #INIT
+            None,  #PASSPERCEP
+            None   #PROFBONUS
         ]
         self.skills = [
-            0,  #ACRO
-            0,  #ANMHAND
-            0,  #ARCANA
-            0,  #ATH
-            0,  #DECEPT
-            0,  #HIST
-            0,  #INS
-            0,  #INTIMI
-            0,  #INVEST
-            0,  #MED
-            0,  #NAT
-            0,  #PERCEP
-            0,  #PERFORM
-            0,  #PERSUA
-            0,  #REL
-            0,  #SLEIGHT
-            0,  #STEALTH
-            0   #SURV
+            None,  #ACRO
+            None,  #ANMHAND
+            None,  #ARCANA
+            None,  #ATH
+            None,  #DECEPT
+            None,  #HIST
+            None,  #INS
+            None,  #INTIMI
+            None,  #INVEST
+            None,  #MED
+            None,  #NAT
+            None,  #PERCEP
+            None,  #PERFORM
+            None,  #PERSUA
+            None,  #REL
+            None,  #SLEIGHT
+            None,  #STEALTH
+            None   #SURV
         ]
 
     def set_name(self, name):
@@ -246,17 +260,12 @@ async def open_char(char_name):
 
 @client.command()
 async def get_stats(file_name):
-    sh = None
-    found = False
-
-    for s in sheets:
-        if s.char_name == file_name:
-            print( s.char_name )
-            found = True
-            sh = s
-    if not found:
-        await client.say( "Sheet not found. Open a sheet with the char name." )
+    a = Author
+    sh = a.auth( file_name=file_name )
+    if sh == -1:
+        await client.say("Sheet not found. Open a sheet with the char name.")
         return
+
     out_str = ""
     for key in sh.stat_dict:
         if key == "strength":
@@ -268,15 +277,9 @@ async def get_stats(file_name):
 # Set all stats for a character
 @client.command()
 async def set_stats(file_name, stre, dex, con, inte, wis, cha):
-    sh = None
-    found = False
-
-    for s in sheets:
-        if s.char_name == file_name:
-            print( s.char_name )
-            found = True
-            sh = s
-    if not found:
+    a = Author
+    sh = a.auth( file_name=file_name )
+    if sh == -1:
         await client.say( "Sheet not found. Open a sheet with the char name." )
         return
 
@@ -300,16 +303,10 @@ async def set_stats(file_name, stre, dex, con, inte, wis, cha):
 # Sets an individual stat for a sheet
 @client.command()
 async def set_stat(file_name, a_score, val, name="setstat"):
-    sh = None
-    found = False
-
-    for s in sheets:
-        if s.char_name == file_name:
-            print(s.char_name)
-            found = True
-            sh = s
-    if not found:
-        await client.say("Sheet not found. Open a sheet with the char name.")
+    a = Author
+    sh = a.auth( file_name=file_name )
+    if sh == -1:
+        await client.say( "Sheet not found. Open a sheet with the char name." )
         return
 
     a_index = sh.stat_dict.get(a_score.lower(), -1)
@@ -329,7 +326,7 @@ async def set_stat(file_name, a_score, val, name="setstat"):
 # Get a single statistic from a sheet
 @client.command()
 async def get_stat(file_name, a_score):
-    sh = None
+    '''sh = None
     found = False
     for s in sheets:
         if s.char_name == file_name:
@@ -342,8 +339,13 @@ async def get_stat(file_name, a_score):
     if not found:
         await client.say("Sheet not found. Open a sheet with the char name.")
         return
+    '''
 
-    #sh = auth(file_name)   Not doing this anymore
+    a = Author
+    sh = a.auth(file_name = file_name)
+    if sh == -1:
+        await client.say( "Sheet not found. Open a sheet with the char name." )
+        return
 
     a_index = sh.stat_dict.get(a_score, -1)
 
@@ -361,23 +363,6 @@ async def get_stat(file_name, a_score):
 async def print_sheet(file_name, name="printsheet"):
     sheet = open(file_name, "r")
     sheet.close()
-
-'''def auth(file_name):
-    sh = None
-    found = False
-    for s in sheets:
-        if s.char_name == file_name:
-            found = True
-            sh = s
-            print( "Name: " + sh.char_name )
-            print( "Index: " + str( sh.stat_dict.get( a_score ) ) )
-            print( "Val: " + str( sh.stats[sh.stat_dict.get( a_score )] ) )
-            print( "Forced val: " + str( sh.stats ) )
-    if not found:
-        client.say( "Sheet not found. Open a sheet with the char name." )
-        return -1
-    return sh'''
-# Calling functions with coroutines is hard
 
 
 # Rolls x y-sided dice
