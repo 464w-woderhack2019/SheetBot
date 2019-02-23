@@ -219,8 +219,7 @@ async def open_char(char_name):
     new_sheet = Sheet(char_name)
     sheets.append(new_sheet)
     fi_str = char_name + ".txt"
-    temp = open(fi_str, "w")
-    temp.write("ah")
+    temp = open(fi_str, "a")
     temp.close()
 
 
