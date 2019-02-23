@@ -215,12 +215,20 @@ async def on_ready():
     print("SheetBot: Ready to role(play)")
 
 
+@client.event
+async def on_error():
+    print("ERROR: Unknown")
+
+
 @client.command()
 async def get_open(name="getopen"):
     if len(sheets) > 0:
+        out_str = ""
         for sh in sheets:
-            await client.say(sh.char_name)
-
+            out_str += sh.char_name + "\n"
+        await client.say(out_str)
+    else:
+        await client.say("No character sheets open at this time.")
 
 @client.command()
 async def open_char(char_name):
@@ -229,6 +237,59 @@ async def open_char(char_name):
     fi_str = char_name + ".txt"
     temp = open(fi_str, "a")
     temp.close()
+
+
+@client.command()
+async def get_stats(file_name):
+    sh = None
+    found = False
+
+    for s in sheets:
+        if s.char_name == file_name:
+            print( s.char_name )
+            found = True
+            sh = s
+    if not found:
+        found = False
+        await client.say( "Sheet not found. Open a sheet with the char name." )
+        return
+    out_str = ""
+    for key in sh.stat_dict:
+        if key == "strength":
+            break
+        out_str = f"{out_str}{key.upper()}: {sh.stats[sh.stat_dict.get(key)]}\n"
+    await client.say(out_str)
+
+
+@client.command()
+async def set_stats(file_name, stre, dex, con, inte, wis, cha):
+    sh = None
+    found = False
+
+    for s in sheets:
+        if s.char_name == file_name:
+            print( s.char_name )
+            found = True
+            sh = s
+    if not found:
+        found = False
+        await client.say( "Sheet not found. Open a sheet with the char name." )
+        return
+    place = 0;
+    try:
+        sh.stats[0] = int(stre)
+        place += 1
+        sh.stats[1] = int(dex)
+        place += 1
+        sh.stats[2] = int(con)
+        place += 1
+        sh.stats[3] = int(inte)
+        place += 1
+        sh.stats[4] = int(wis)
+        place += 1
+        sh.stats[5] = int(cha)
+    except:
+        await client.say(f"Invalid score inputted at index {str(place)}")
 
 
 @client.command()
@@ -243,10 +304,10 @@ async def set_stat(file_name, a_score, val, name="setstat"):
             sh = s
     if not found:
         found = False
-        print("Sheet not found. Open a sheet with the char name.")
+        await client.say("Sheet not found. Open a sheet with the char name.")
         return
     print("AAAHHHH")
-    a_index = sh.stat_dict.get(a_score, -1)
+    a_index = sh.stat_dict.get(a_score.lower(), -1)
     print("Index: " + str(a_index))
 
     if a_index < 0 or a_index > 5:
@@ -273,7 +334,11 @@ async def get_stat(file_name, a_score):
             print("Val: " + str(sh.stats[sh.stat_dict.get(a_score)]))
             print("Forced val: " + str(sh.stats))
     if not found:
-        print("Sheet not found. Open a sheet with the char name.")
+        await client.say("Sheet not found. Open a sheet with the char name.")
+        return
+
+    #sh = auth(file_name)   Not doing this anymore
+    if sh == -1:
         return
 
     a_index = sh.stat_dict.get(a_score, -1)
@@ -291,6 +356,24 @@ async def get_stat(file_name, a_score):
 async def print_sheet(file_name, name="printsheet"):
     sheet = open(file_name, "r")
     sheet.close()
+
+'''def auth(file_name):
+    sh = None
+    found = False
+    for s in sheets:
+        if s.char_name == file_name:
+            found = True
+            sh = s
+            print( "Name: " + sh.char_name )
+            print( "Index: " + str( sh.stat_dict.get( a_score ) ) )
+            print( "Val: " + str( sh.stats[sh.stat_dict.get( a_score )] ) )
+            print( "Forced val: " + str( sh.stats ) )
+    if not found:
+        client.say( "Sheet not found. Open a sheet with the char name." )
+        return -1
+    return sh'''
+# Calling functions with coroutines is hard
+
 
 @client.command()
 async def roll(str):
