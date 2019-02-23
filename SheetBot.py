@@ -79,6 +79,31 @@ sheets = []
 class Sheet:
 
     char_name = ""
+    basics_dict = {
+        "player": 0,
+        "name": 1,
+        "charactername": 1,
+        "charname": 1,
+        "char_name": 1
+    }
+    info_dict = {
+        "lvl": 0,
+        "level": 0,
+        "class": 1,
+        "race": 2,
+        "subrace": 3,
+        "background": 4,
+        "bg": 4,
+        "alignment": 5,
+        "align": 5,
+        "sex": 6,
+        "gend": 6,
+        "gender": 6,
+        "xp": 7,
+        "exp": 7,
+        "experience": 7
+    }
+
     stat_dict = {
         "str": 0,
         "dex": 1,
@@ -94,6 +119,20 @@ class Sheet:
         "charisma": 5
     }
 
+    saves_dict = {
+        "str": 0,
+        "strength": 0,
+        "dex": 1,
+        "dexterity": 1,
+        "con": 2,
+        "constitution": 2,
+        "int": 3,
+        "intelligence": 3,
+        "wis": 4,
+        "wisdom": 4,
+        "cha": 5,
+        "charisma": 5
+    }
     basics = []
     info = []
     stats = []
@@ -155,6 +194,12 @@ class Sheet:
     def set_name(self, name):
         self.char_name = name
 
+    def write_to_file(self):
+        print()#   This problem is left as an exercise to the reader
+
+    def read_from_file(self):
+        print()#   This problem is left as an exercise to the reader
+
 
 @client.event
 async def on_ready():
@@ -166,14 +211,16 @@ async def on_ready():
 async def get_open(name="getopen"):
     if len(sheets) > 0:
         for sh in sheets:
-            print(sh.char_name)
+            await client.say(sh.char_name)
 
 
 @client.command()
-async def open_char(char_name, name="openchar"):
+async def open_char(char_name):
     new_sheet = Sheet(char_name)
-    sheets.append(Sheet)
-    temp = open(char_name + ".txt", "r")
+    sheets.append(new_sheet)
+    fi_str = char_name + ".txt"
+    temp = open(fi_str, "w")
+    temp.write("ah")
     temp.close()
 
 
