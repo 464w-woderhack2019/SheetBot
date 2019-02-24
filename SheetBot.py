@@ -31,7 +31,7 @@ SCON
 SINT
 SWIS
 SCHA
---  nums
+--  atts
 AC
 TotHP
 CurrHP
@@ -144,17 +144,39 @@ class Sheet:
 
     saves_dict = {
         "str": 0,
-        "strength": 0,
         "dex": 1,
-        "dexterity": 1,
         "con": 2,
-        "constitution": 2,
         "int": 3,
-        "intelligence": 3,
         "wis": 4,
-        "wisdom": 4,
         "cha": 5,
-        "charisma": 5
+        "charisma": 5,
+        "strength": 0,
+        "wisdom": 4,
+        "intelligence": 3,
+        "constitution": 2,
+        "dexterity": 1,
+
+    }
+
+    atts_dict = {
+        "ac": 0,
+        "tothp": 1,
+        "currhp": 2,
+        "speed": 3,
+        "init": 4,
+        "passpercep": 5,
+        "profbonus": 6,
+        "armorclass": 0,
+        "armor_class": 0,
+        "totalhp": 1,
+        "total_hp": 1,
+        "currenthp": 2,
+        "current_hp": 2,
+        "initiative": 4,
+        "passiveperception": 5,
+        "passive_perception": 5,
+        "proficiencybonus": 6,
+        "proficiency_bonus": 6
     }
 
     #   Arrays for storing values on a sheet-by-sheet basis
@@ -172,7 +194,7 @@ class Sheet:
     ]
     stats = []
     saves = []
-    nums = []
+    atts = []
     langs = []  #Array of strings (languages)
     weaps = []  #Array of arrays. Inner array has: [Wep name, damage, special effects]
     spells = [] #Array of arrays. Inner array: [Spell name, spell level, range, VSM, effect]
@@ -202,7 +224,7 @@ class Sheet:
             None,  #WIS
             None   #CHA
         ]
-        self.nums = [
+        self.atts = [
             None,  #AC
             None,  #TotHP
             None,  #CurrHP
@@ -291,7 +313,7 @@ async def set_info(file_name, a_thing, input_name):
         await client.say(auth_failed)
         return
     try:
-        sh.info[sh.info_dict.get(a_thing, -1)] = input_name
+        sh.info[sh.info_dict.get(a_thing.lower(), -1)] = input_name
     except:
         await client.say("Invalid data type. Choose lvl, class, race, subrace, background, alignment, gender, or xp.")
 
@@ -326,6 +348,7 @@ async def get_infos(file_name):
     for e in range(0,8):
         outstr = f"{outstr}{sh.info_atts[e]}: {sh.info[e]}\n"
     await client.say(outstr)
+
 
 @client.command()
 async def get_info(file_name, a_thing):
@@ -439,6 +462,48 @@ async def set_stats(file_name, stre, dex, con, inte, wis, cha):
         await client.say(f"Invalid score inputted at index {str(place)}")
 
 
+@client.command()
+async def get_saves(file_name):
+    a = Author
+    sh = a.auth( file_name=file_name )
+    if sh == -1:
+        await client.say("Sheet not found. Open a sheet with the char name.")
+        return
+
+    out_str = ""
+    for key in sh.saves_dict:
+        if key == "charisma":
+            break
+        out_str = f"{out_str}{key.upper()}: {sh.saves[sh.saves_dict.get(key)]}\n"
+    await client.say(out_str)
+
+
+# Set all stats for a character
+@client.command()
+async def set_saves(file_name, stre, dex, con, inte, wis, cha):
+    a = Author
+    sh = a.auth( file_name=file_name )
+    if sh == -1:
+        await client.say( "Sheet not found. Open a sheet with the char name." )
+        return
+
+    place = 0;
+    try:
+        sh.saves[0] = int(stre)
+        place += 1
+        sh.saves[1] = int(dex)
+        place += 1
+        sh.saves[2] = int(con)
+        place += 1
+        sh.saves[3] = int(inte)
+        place += 1
+        sh.saves[4] = int(wis)
+        place += 1
+        sh.saves[5] = int(cha)
+    except:
+        await client.say(f"Invalid score inputted at index {str(place)}")
+
+
 # Sets an individual stat for a sheet
 @client.command()
 async def set_stat(file_name, a_score, val, name="setstat"):
@@ -479,6 +544,49 @@ async def get_stat(file_name, a_score):
     else:
         try:
             await client.say(str(sh.stats[a_index]))
+        except:
+            await client.say("Print failed")
+
+
+@client.command()
+async def set_save(file_name, a_score, val, name="setsave"):
+    a = Author
+    sh = a.auth( file_name=file_name )
+    if sh == -1:
+        await client.say( "Sheet not found. Open a sheet with the char name." )
+        return
+
+    a_index = sh.saves_dict.get(a_score.lower(), -1)
+    print("Index: " + str(a_index))
+
+    if a_index < 0 or a_index > 5:
+        await client.say("Input invalid")
+    else:
+        try:
+            print(sh.char_name)
+            sh.saves[a_index] = int(val)
+            print(sh.saves[a_index])
+        except:
+            await client.say("Invalid score inputted")
+
+
+# Get a single statistic from a sheet
+@client.command()
+async def get_save(file_name, a_score):
+
+    a = Author
+    sh = a.auth(file_name = file_name)
+    if sh == -1:
+        await client.say( "Sheet not found. Open a sheet with the char name." )
+        return
+
+    a_index = sh.saves_dict.get(a_score.lower(), -1)
+
+    if a_index < 0 or a_index > 5:
+        await client.say("Input invalid")
+    else:
+        try:
+            await client.say(str(sh.saves[a_index]))
         except:
             await client.say("Print failed")
 
