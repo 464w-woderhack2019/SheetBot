@@ -377,6 +377,46 @@ async def remove_lang(file_name, lang):
 
 
 @client.command()
+async def add_weapon(file_name, w_name, damage, effects):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    out_arr = []
+    out_arr.append(w_name)
+    out_arr.append(damage)
+    out_arr.append(effects)
+    sh.weaps.append(out_arr)
+
+@client.command()
+async def get_weapons(file_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    out_str = ""
+    for array in sh.weaps:
+        out_str = f"{out_str}**{array[0]}:** Deals {array[1]} damage | Effects: {array[2]}\n"
+    await client.say(out_str)
+
+@client.command()
+async def remove_weapon(file_name, w_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    rem = None
+    for arr in sh.weaps:
+        if w_name == arr[0]:
+            rem = arr
+
+    sh.weaps.remove(rem)
+
+
+@client.command()
 async def get_langs(file_name):
     a = Author
     sh = a.auth(file_name)
