@@ -357,9 +357,36 @@ async def set_avatar(file_name, url):
 
 
 @client.command()
-async def add_language():
-    print("Not implemented")
+async def add_lang(file_name, lang):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    sh.langs.append(lang)
 
+
+@client.command()
+async def remove_lang(file_name, lang):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    sh.langs.remove(lang)
+
+
+@client.command()
+async def get_langs(file_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    out_str = ""
+    for lang in sh.langs:
+        out_str = f"{out_str}{lang} |   "
+    await client.say(out_str)
 
 @client.command()
 async def set_skill(file_name, a_thing, input_name):
