@@ -834,10 +834,27 @@ async def get_save(file_name, a_score):
 
 
 #   Prints a character sheet to the discord channel
-@client.command()
-async def print_sheet(file_name, name="printsheet"):
-    sheet = open(file_name, "r")
-    sheet.close()
+@client.command(pass_context=True)
+async def print_sheet(ctx, file_name):
+    a = Author
+    sh = a.auth(file_name)
+
+    if sh == -1:
+        await client.say("Sheet not found. Open a sheet with the char name.")
+        return
+
+    embed = discord.Embed(title="Level " + sh.info[sh.info_dict.get("lvl")] + " " + sh.info[sh.info_dict.get("class")] + ", HP: " + sh.atts[sh.atts_dict.get("currenthp")] + "/" + sh.atts[sh.atts_dict.get("totalhp")], description=sh.info[sh.info_dict.get("race")], color=0x0FF00F)
+    print()
+    embed.set_author(name=sh.basics[1] + ", owner: " + sh.basics[0])
+    embed.set_thumbnail(url=sh.avatar)
+
+    for key in sh.stat_dict:
+        if key == "strength":
+            break
+        # out_str = f"{out_str}{key.upper()}: {sh.stats[sh.stat_dict.get(key)]}\n"
+        embed.add_field(name=key.upper(), value=sh.stats[sh.stat_dict.get(key)], inline=True)
+
+    await client.send_message(ctx.message.channel, embed=embed)
 
 
 # Rolls x y-sided dice
