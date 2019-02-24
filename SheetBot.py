@@ -416,6 +416,16 @@ async def remove_weapon(file_name, w_name):
     sh.weaps.remove(rem)
 
 
+''''@client.command()
+async def add_spell(file_name, s_name, lvl, range, comp, eff):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+'''
+
+
 @client.command()
 async def get_langs(file_name):
     a = Author
@@ -427,6 +437,33 @@ async def get_langs(file_name):
     for lang in sh.langs:
         out_str = f"{out_str}{lang} |   "
     await client.say(out_str)
+
+
+@client.command()
+async def set_att(file_name, a_thing, input_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        sh.atts[sh.atts_dict.get(a_thing.lower(), -1)] = input_name
+    except:
+        await client.say("Invalid data type. Choose a skill.")
+
+
+@client.command()
+async def get_att(file_name, a_thing):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        await client.say(sh.atts[sh.atts_dict.get(a_thing.lower(), -1)])
+    except:
+        await client.say("Invalid data type. Choose an attribute.")
+
 
 @client.command()
 async def set_skill(file_name, a_thing, input_name):
