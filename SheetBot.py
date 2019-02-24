@@ -66,6 +66,10 @@ WEAPS
 SPELLS
 --  gear
 GEAR
+--  abilities
+ABILITIES
+-- avatar
+AVATAR
 --
 '''
 # Token the bot uses
@@ -98,6 +102,7 @@ class Author:
 #   Stores all information for a 5e character sheet
 class Sheet:
 
+    avatar = ""
     #   Character name
     char_name = ""
 
@@ -179,6 +184,29 @@ class Sheet:
         "proficiency_bonus": 6
     }
 
+    skills_dict = {
+        "acrobatics": 0,
+        "animalhandling": 1,
+        "arcana": 2,
+        "athletics": 3,
+        "deception": 4,
+        "history": 5,
+        "insight": 6,
+        "intimidation": 7,
+        "investigation": 8,
+        "medicine": 9,
+        "nature": 10,
+        "perception": 11,
+        "performance": 12,
+        "persuasion": 13,
+        "religion": 14,
+        "sleightofhand": 15,
+        "stealth": 16,
+        "survival": 17,
+        "acro": 0,
+        "animal_handling": 1
+    }
+
     #   Arrays for storing values on a sheet-by-sheet basis
     basics = []
     info = []
@@ -195,6 +223,7 @@ class Sheet:
     stats = []
     saves = []
     atts = []
+    skills = []
     langs = []  #Array of strings (languages)
     weaps = []  #Array of arrays. Inner array has: [Wep name, damage, special effects]
     spells = [] #Array of arrays. Inner array: [Spell name, spell level, range, VSM, effect]
@@ -202,7 +231,9 @@ class Sheet:
 
     # Constructor. Initializes values. In the future, should check if file exists and
     # load vals if it does.
-    def __init__(self, name):
+    def __init__(self, name, avatar):
+        self.avatar = avatar
+
         self.basics = [
             None,   #Player
             name    #Name
@@ -296,14 +327,121 @@ async def get_open(name="getopen"):
         await client.say("No character sheets open at this time.")
 
 
-@client.command()
-async def open_char(char_name):
-    new_sheet = Sheet(char_name)
+@client.command(pass_context = True)
+async def open_char(ctx, char_name):
+    new_sheet = Sheet(char_name, ctx.message.author.avatar_url)
     sheets.append(new_sheet)
     fi_str = char_name + ".txt"
     temp = open(fi_str, "a")
     temp.close()
 
+
+@client.command()
+async def get_avatar(file_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    await client.say(sh.avatar)
+
+
+@client.command()
+async def set_avatar(file_name, url):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    sh.avatar = url
+
+
+@client.command()
+async def add_language():
+    print("Not implemented")
+
+
+@client.command()
+async def set_skill(file_name, a_thing, input_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        sh.skills[sh.skills_dict.get(a_thing.lower(), -1)] = input_name
+    except:
+        await client.say("Invalid data type. Choose a skill.")
+
+
+@client.command()
+async def get_skill(file_name, a_thing):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        await client.say(sh.skills[sh.skills_dict.get(a_thing.lower(), -1)])
+    except:
+        await client.say("Invalid data type. Choose a skill.")
+
+
+@client.command()
+async def set_skills(file_name, acr, anm, arc, ath, dec, his, ins, inti, inv, med, nat, perc, perf, pers, rel, sle, ste, sur):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+
+    sh.skills[0] = acr
+    sh.skills[1] = anm
+    sh.skills[2] = arc
+    sh.skills[3] = ath
+    sh.skills[4] = dec
+    sh.skills[5] = his
+    sh.skills[6] = ins
+    sh.skills[7] = inti
+    sh.skills[8] = inv
+    sh.skills[9] = med
+    sh.skills[10] = nat
+    sh.skills[11] = perc
+    sh.skills[12] = perf
+    sh.skills[13] = pers
+    sh.skills[14] = rel
+    sh.skills[15] = sle
+    sh.skills[16] = ste
+    sh.skills[17] = sur
+
+
+@client.command()
+async def get_skills(file_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+
+    await client.say(
+        "Acrobatics: " + sh.skills[0] +
+        "\nAnimal Handling:" + sh.skills[1] +
+        "\nArcana: " + sh.skills[2] +
+        "\nAthletics: " + sh.skills[3] +
+        "\nDeception: " + sh.skills[4] +
+        "\nHistory: " + sh.skills[5] +
+        "\nInsight: " + sh.skills[6] +
+        "\nIntimidation: " + sh.skills[7] +
+        "\nInvestigation: " + sh.skills[8] +
+        "\nMedicine: " + sh.skills[9] +
+        "\nNature: " + sh.skills[10] +
+        "\nPerception: " + sh.skills[11] +
+        "\nPerformance: " + sh.skills[12] +
+        "\nPersuasion: " + sh.skills[13] +
+        "\nReligion: " + sh.skills[14] +
+        "\nSleight of Hand: " + sh.skills[15] +
+        "\nStealth: " + sh.skills[16] +
+        "\nSurvival: " +sh.skills[17])
 
 @client.command()
 async def set_info(file_name, a_thing, input_name):
