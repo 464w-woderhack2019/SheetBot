@@ -90,7 +90,6 @@ class Author:
                 found = True
                 sh = s
                 print( "Name: " + sh.char_name )
-                print( "Forced val: " + str( sh.stats ) )
         if not found:
             print( "Sheet not found. Open a sheet with the char name." )
             return -1
@@ -222,6 +221,16 @@ class Sheet:
             None,  #STEALTH
             None   #SURV
         ]
+        self.info = [
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None
+        ]
 
     def set_name(self, name):
         self.char_name = name
@@ -265,6 +274,32 @@ async def open_char(char_name):
 
 
 @client.command()
+async def set_info(file_name, a_thing, input_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        sh.info[sh.info_dict.get(a_thing, -1)] = input_name
+    except:
+        await client.say("Invalid data type. Choose lvl, class, race, subrace, background, alignment, gender, or xp.")
+
+
+@client.command()
+async def get_info(file_name, a_thing):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        await client.say(sh.info[sh.info_dict.get(a_thing.lower(), -1)])
+    except:
+        await client.say("Invalid data type. Choose 1v1, class, race, subrace, background, alignment, gender, or xp.")
+
+
+@client.command()
 async def set_basic(file_name, a_thing, input_name):
     a = Author
     sh = a.auth(file_name)
@@ -291,7 +326,7 @@ async def get_basic(file_name, a_thing):
         return
     print(sh.basics[sh.basics_dict.get(a_thing, -1)])
     try:
-        await client.say(sh.basics[sh.basics_dict.get(a_thing, -1)])
+        await client.say(sh.basics[sh.basics_dict.get(a_thing.lower(), -1)])
     except:
         await client.say("Invalid data type. Choose player or name.")
 
@@ -389,20 +424,6 @@ async def set_stat(file_name, a_score, val, name="setstat"):
 # Get a single statistic from a sheet
 @client.command()
 async def get_stat(file_name, a_score):
-    '''sh = None
-    found = False
-    for s in sheets:
-        if s.char_name == file_name:
-            found = True
-            sh = s
-            print("Name: " + sh.char_name)
-            print("Index: " + str(sh.stat_dict.get(a_score)))
-            print("Val: " + str(sh.stats[sh.stat_dict.get(a_score)]))
-            print("Forced val: " + str(sh.stats))
-    if not found:
-        await client.say("Sheet not found. Open a sheet with the char name.")
-        return
-    '''
 
     a = Author
     sh = a.auth(file_name = file_name)
@@ -410,7 +431,7 @@ async def get_stat(file_name, a_score):
         await client.say( "Sheet not found. Open a sheet with the char name." )
         return
 
-    a_index = sh.stat_dict.get(a_score, -1)
+    a_index = sh.stat_dict.get(a_score.lower(), -1)
 
     if a_index < 0 or a_index > 5:
         await client.say("Input invalid")
