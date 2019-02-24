@@ -160,6 +160,16 @@ class Sheet:
     #   Arrays for storing values on a sheet-by-sheet basis
     basics = []
     info = []
+    info_atts = [
+        "LVL",
+        "CLASS",
+        "RACE",
+        "SUBRACE",
+        "BACKGROUND",
+        "ALIGNMENT",
+        "GENDER",
+        "EXP"
+    ]
     stats = []
     saves = []
     nums = []
@@ -285,6 +295,37 @@ async def set_info(file_name, a_thing, input_name):
     except:
         await client.say("Invalid data type. Choose lvl, class, race, subrace, background, alignment, gender, or xp.")
 
+
+@client.command()
+async def set_infos(file_name, lvl, cla, race, subr, bg, align, sex, xp):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+
+    sh.info[0] = lvl
+    sh.info[1] = cla
+    sh.info[2] = race
+    sh.info[3] = subr
+    sh.info[4] = bg
+    sh.info[5] = align
+    sh.info[6] = sex
+    sh.info[7] = xp
+
+
+@client.command()
+async def get_infos(file_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+
+    outstr = ""
+    for e in range(0,8):
+        outstr = f"{outstr}{sh.info_atts[e]}: {sh.info[e]}\n"
+    await client.say(outstr)
 
 @client.command()
 async def get_info(file_name, a_thing):
