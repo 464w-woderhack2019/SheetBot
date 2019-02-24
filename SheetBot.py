@@ -74,7 +74,7 @@ TOKEN = "NTQ4NzA2MTEyNzM2NzIyOTQ0.D1JQvA.Y_7u1wv6Wt-iSA9J7G17WvS1JSU"  # Stores 
 auth_failed = "Sheet not found. Open a sheet with the char name."
 
 # Creating new bot object
-client = commands.Bot(command_prefix=".")   # Create new client object
+client = commands.Bot(command_prefix=".")   # Create new client object with '.' as cmd prefix
 
 presence = "God"    # Rich presence phrase. 'Playing' will be put before this automatically.
 
@@ -294,6 +294,31 @@ async def get_basic(file_name, a_thing):
         await client.say(sh.basics[sh.basics_dict.get(a_thing, -1)])
     except:
         await client.say("Invalid data type. Choose player or name.")
+
+
+@client.command()
+async def set_basics(file_name, plyr, nm):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        sh.basics[sh.basics_dict.get("player")] = plyr
+        sh.basics[sh.basics_dict.get("name")] = nm
+    except:
+        await client.say("Invalid entries.")
+
+
+@client.command()
+async def get_basics(file_name):
+    a = Author
+    sh = a.auth(file_name)
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+
+    await client.say(f"Player: {sh.basics[0]}\nCharacter name: {sh.basics[1]}")
 
 
 @client.command()
