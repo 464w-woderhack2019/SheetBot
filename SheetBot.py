@@ -71,6 +71,8 @@ GEAR
 # Token the bot uses
 TOKEN = "NTQ4NzA2MTEyNzM2NzIyOTQ0.D1JQvA.Y_7u1wv6Wt-iSA9J7G17WvS1JSU"  # Stores bot token. KEEP THIS PRIVATE
 
+auth_failed = "Sheet not found. Open a sheet with the char name."
+
 # Creating new bot object
 client = commands.Bot(command_prefix=".")   # Create new client object
 
@@ -170,6 +172,10 @@ class Sheet:
     # Constructor. Initializes values. In the future, should check if file exists and
     # load vals if it does.
     def __init__(self, name):
+        self.basics = [
+            None,   #Player
+            name    #Name
+        ]
         self.stats = [
             None,  #STR
             None,  #DEX
@@ -256,6 +262,38 @@ async def open_char(char_name):
     fi_str = char_name + ".txt"
     temp = open(fi_str, "a")
     temp.close()
+
+
+@client.command()
+async def set_basic(file_name, a_thing, input_name):
+    a = Author
+    sh = a.auth(file_name)
+    print(a_thing)
+    print(sh.basics_dict.get(a_thing, -1))
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    try:
+        sh.basics[sh.basics_dict.get(a_thing, -1)] = input_name
+    except:
+        await client.say("Invalid data type. Choose player or name.")
+    print(input_name)
+
+
+@client.command()
+async def get_basic(file_name, a_thing):
+    a = Author
+    sh = a.auth(file_name)
+    print(a_thing)
+    print(sh.basics_dict.get(a_thing, -1))
+    if sh == -1:
+        await client.say(auth_failed)
+        return
+    print(sh.basics[sh.basics_dict.get(a_thing, -1)])
+    try:
+        await client.say(sh.basics[sh.basics_dict.get(a_thing, -1)])
+    except:
+        await client.say("Invalid data type. Choose player or name.")
 
 
 @client.command()
